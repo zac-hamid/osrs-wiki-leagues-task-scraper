@@ -11,7 +11,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--league", choices = ['TBR', 'RE'], default = "RE", help = "The league to scrape task list for. TBR = Trailblazer Reloaded, RE = Raging Echoes")
 parser.add_argument("-o", "--output", default = "tasks", help = "The name of the output file (default = tasks)")
 args = parser.parse_args()
-print(args.league, args.output);
 
 url_map = {'TBR': 'Trailblazer_Reloaded_League/Tasks', 'RE': 'Raging_Echoes_League/Tasks', }
 
@@ -42,7 +41,7 @@ for table in tables:
 
 # Check if the target table is found
 if target_table is None:
-    print("Target table not found.")
+    raise Exception("Unable to find the task list!")
     exit()
 
 # Prepare to write to CSV
