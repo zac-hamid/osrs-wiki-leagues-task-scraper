@@ -1,9 +1,22 @@
 import requests
+import sys
 from bs4 import BeautifulSoup
 import csv
+import argparse
+
+# Initialize parser
+parser = argparse.ArgumentParser()
+
+# Adding optional argument
+parser.add_argument("-l", "--league", choices = ['TBR', 'RE'], default = "RE", help = "The league to scrape task list for. TBR = Trailblazer Reloaded, RE = Raging Echoes")
+parser.add_argument("-o", "--output", default = "tasks", help = "The name of the output file (default = tasks)")
+args = parser.parse_args()
+print(args.league, args.output);
+
+url_map = {'TBR': 'Trailblazer_Reloaded_League/Tasks', 'RE': 'Raging_Echoes_League/Tasks', }
 
 # URL of the wiki page
-url = 'https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Tasks'
+url = 'https://oldschool.runescape.wiki/w/' + url_map[args.league]
 
 # Fetch the webpage
 response = requests.get(url)
@@ -16,7 +29,9 @@ soup = BeautifulSoup(html_content, 'html.parser')
 tables = soup.find_all('table')
 
 # Target table with specific headers
-target_headers = ["Area", "Name", "Task", "Requirements", "Pts", "Comp%"]
+
+target_headers_map = {'TBR': ["Area", "Name", "Task", "Requirements", "Pts", "Comp%"], 'RE': ["Area", "Name", "Task", "Requirements", "Pts", "Comp%"]}
+target_headers = target_headers_map[args.league]
 target_table = None
 
 for table in tables:
@@ -45,7 +60,7 @@ for row in target_table.find_all('tr'):
         data.append(cols)
 
 # Filename for the CSV file
-csv_file_name = 'trailblazer_reloaded_league_tasks.csv'
+csv_file_name = args.output + '.csv'
 
 # Write data to CSV
 with open(csv_file_name, mode='w', newline='', encoding='utf-8') as file:
